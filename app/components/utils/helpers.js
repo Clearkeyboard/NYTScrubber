@@ -6,29 +6,39 @@ var helpers = {
 
     runQuery: function(data) {
         console.log(data);
-        var url = 'https://api.nytimes.com/svc/search/v2/articlesearch.json';
-        url += '?' + $.param({
-            'api-key': nytAPI,
-            'q': data.term,
-            'begin_date': data.start,
-            'end_date': data.end
-        });
-        //Ajax GET call
-        $.ajax({
-            method: 'GET',
-            url: url,
+        
+        //Axios GET call
+        return axios({
+            method: 'get',
+            url:'https://api.nytimes.com/svc/search/v2/articlesearch.json',
+            params: {
+                'api-key': nytAPI,
+                q: data.term,
+                begin_date: data.start,
+                end_date: data.end
+            }
         }).then(function (response) {
-            return data = {
-            title: response.docs[0].headline.main,
-            url : response.docs[0].web_url
-            };
+            var newResults = [];
+            var counter = 0
+            for (var i = 0; i < response.data.response.docs.length; i++) {
+                if(counter > 4) {
+                    return newResults;
+                } else {
+                    newResults.push(response.data.response.docs[counter]);
+                    counter++;
+                }
+            }
+            return newResults
         });
     },
     getArticle: function() {
         return axios.get("/api");
     },
     postArticle: function(data) {
-        return axios.post("/api", {title: data.title, url: data.url});
+        axios.post("/api", {title: data.title, url: data.url}).then(function(results) {
+            console.log("Posted to MongoDB");
+            return(results);
+        })
     }
 }
 

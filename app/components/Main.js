@@ -18,7 +18,6 @@ var Main = React.createClass({
     console.log(this.state.term);
   },
   handleSubmit: function(event) {
-    event.preventDefault();
     var term = this.state.term;
     var start = this.state.start;
     var end = this.state.end;
@@ -31,8 +30,11 @@ var Main = React.createClass({
     helpers.runQuery(sentData).then(function(data) {
       console.log("Search Term :" + term);
       console.log(data);
+      this.setState({
+        results: data
+      })
 
-    })
+    }.bind(this))
   },
 
   // Here we render the component
@@ -53,7 +55,7 @@ var Main = React.createClass({
           </div>
           <div className="panel-body">
 
-            <form onSubmit={this.handleSubmit} onChange={this.handleChange} role="form">
+            <form onChange={this.handleChange} role="form">
 
               <div className="form-group">
                 <label for="search">Search Term:</label>
@@ -70,7 +72,7 @@ var Main = React.createClass({
                 <input type="text" className="form-control" name="end" value={this.state.end}></input>
               </div>
 
-              <Link to="/search"><button type="submit" className="btn btn-default" id="run-search"><i className="fa fa-search"></i> Search</button></Link>
+              <Link to="/search"><button onClick={this.handleSubmit} type="submit" className="btn btn-default" id="run-search"><i className="fa fa-search"></i> Search</button></Link>
 
             </form>
           </div>
