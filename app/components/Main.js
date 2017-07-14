@@ -14,7 +14,7 @@ var Main = React.createClass({
     return { term: "" };
   },
   handleChange: function(event) {
-    this.setState({[event.target.id]: event.target.value });
+    this.setState({[event.target.name]: event.target.value });
     console.log(this.state.term);
   },
   handleSubmit: function(event) {
@@ -57,17 +57,17 @@ var Main = React.createClass({
 
               <div className="form-group">
                 <label for="search">Search Term:</label>
-                <input type="text" className="form-control" id="term" value={this.state.term}></input>
+                <input type="text" className="form-control" name="term" value={this.state.term}></input>
               </div>
 
               <div className="form-group">
                 <label for="start-year">Start Year (Optional):</label>
-                <input type="text" className="form-control" id="start" value={this.state.start}></input>
+                <input type="text" className="form-control" name="start" value={this.state.start}></input>
               </div>
 
               <div className="form-group">
                 <label for="end-year">End Year (Optional):</label>
-                <input type="text" className="form-control" id="end-year" value={this.state.end}></input>
+                <input type="text" className="form-control" name="end" value={this.state.end}></input>
               </div>
 
               <Link to="/search"><button type="submit" className="btn btn-default" id="run-search"><i className="fa fa-search"></i> Search</button></Link>
