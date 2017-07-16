@@ -1,3 +1,8 @@
+var axios = require('axios');
+//Include React animation groups
+var TransitionGroup = require('react-addons-transition-group');
+//Include TweenMax animation library
+var TweenMax = require('gsap');
 // Include React
 var React = require("react");
 // Including the Link component from React Router to navigate within our application without full page reloads
@@ -11,11 +16,50 @@ var jumboStyle = {
 // Create the Main component
 var Main = React.createClass({
   getInitialState: function() {
-    return { term: "" };
+    return { 
+      term: "",
+      results:[],
+      savedArticles: [],
+      showChild1: false,
+            };
+  },
+  saveArticle: function(title, url){
+    helpers.postArticle(title, url);
+    this.getArticle();
+  },
+  deleteArticle: function(article){
+    console.log(article)
+    axios.delete('/api' + article._id)
+    .then(function(response){
+      this.setState({
+        savedArticles: response.data
+      });
+      return response.data;
+    }.bind(this))
+    this.getArticle();
+  },
+  getArticle: function(){
+    axios.get('/api')
+    .then(function(response){
+      this.setState({
+        savedArticles: response.data
+      });
+    }.bind(this))
   },
   handleChange: function(event) {
     this.setState({[event.target.name]: event.target.value });
     console.log(this.state.term);
+  },
+  componentDidMount: function(){
+    axios.get('/api')
+    .then(function(response){
+      this.setState({
+        savedArticles: response.data
+        })
+    }.bind(this));
+  },
+  handleSave: function(event) {
+    this.setState({showChild: !this.state.showChild})
   },
   handleSubmit: function(event) {
     var term = this.state.term;
@@ -29,14 +73,13 @@ var Main = React.createClass({
     }
     helpers.runQuery(sentData).then(function(data) {
       console.log("Search Term :" + term);
-      console.log(data);
       this.setState({
         results: data
       })
-
     }.bind(this))
+    this.setState({showChild: !this.state.showChild})
   },
-
+  
   // Here we render the component
   render: function() {
 
@@ -58,17 +101,17 @@ var Main = React.createClass({
             <form onChange={this.handleChange} role="form">
 
               <div className="form-group">
-                <label for="search">Search Term:</label>
+                <label htmlFor="search">Search Term:</label>
                 <input type="text" className="form-control" name="term" value={this.state.term}></input>
               </div>
 
               <div className="form-group">
-                <label for="start-year">Start Year (Optional):</label>
+                <label htmlFor="start-year">Start Year (Optional):</label>
                 <input type="text" className="form-control" name="start" value={this.state.start}></input>
               </div>
 
               <div className="form-group">
-                <label for="end-year">End Year (Optional):</label>
+                <label htmlFor="end-year">End Year (Optional):</label>
                 <input type="text" className="form-control" name="end" value={this.state.end}></input>
               </div>
 
@@ -82,9 +125,14 @@ var Main = React.createClass({
 
     
     <div className="row">
-        {this.props.children}
+    <TransitionGroup>
+        {this.state.showChild ? <Search results={this.state.results} saveArticle={this.saveArticle}/> : null}
+    </TransitionGroup>    
     </div>
 
+    <div className='row'>
+        <Saved savedArticles={this.state.savedArticles} deleteArticle={this.deleteArticle} />
+    </div>
     <div className="row">
       <div className="col-sm-12">
 

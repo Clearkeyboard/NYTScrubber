@@ -31,13 +31,10 @@ var helpers = {
             return newResults
         });
     },
-    getArticle: function() {
-        return axios.get("/api");
-    },
-    postArticle: function(data) {
-        axios.post("/api", {title: data.title, url: data.url}).then(function(results) {
+    postArticle: function(title, url) {
+        axios.post("/api", {title: title, url: url}).then(function(results) {
             console.log("Posted to MongoDB");
-            return(results);
+            return results;
         })
     }
 }
